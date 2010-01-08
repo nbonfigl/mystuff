@@ -1,0 +1,5 @@
+:port: 993
+:ssl: true
+:server: imap.gmail.com
+:login: nbonfigl@gmail.com
+
