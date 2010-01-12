@@ -9,6 +9,7 @@ require 'highline/import'
 require 'yaml'
 
 class Mymail
+
     def initialize()
         @connect_info = YAML::load(File.open('mymailpref.yml'))
         system("clear")
@@ -26,6 +27,7 @@ class Mymail
 	        print "Can't connect to server...  Check mymailprefs.yml file.\n\n"
 	        exit
         end
+
     end
         
     def login()
@@ -42,20 +44,44 @@ class Mymail
     end
     
     def list_inbox()
+    
         
-        puts "=== INBOX LISTING ==================="
-        puts "Name | Email Address | Subject | Date"
-        puts "-------------------------------------\n"
+        
+        puts "===[ INBOX LISTING ]==============================================================================="
+        puts "Name           |  Email Address           |  Subject                                 |  Date       "
+        puts "---------------------------------------------------------------------------------------------------\n"
         
         @imap.examine('INBOX')
-        @imap.search(["SEEN"]).reverse_each do |m_id|
+        @imap.search("1:10000").reverse_each do |m_id|
             @list = @imap.fetch(m_id, "ENVELOPE")[0]
             @list_contents = @list.attr["ENVELOPE"]
-            puts "#{@list_contents.from[0].name} | #{@list_contents.sender[0].mailbox}@#{@list_contents.sender[0].host} | #{@list_contents.subject} | #{@list_contents.date}"
+            puts "#{@list_contents.from[0].name} \t #{@list_contents.sender[0].mailbox}@#{@list_contents.sender[0].host} \t #{@list_contents.subject} \t #{@list_contents.date}"
         end    
         
-        puts "=== END LIST ========================\n\n"  
+        puts "===[ END LIST ]====================================================================================\n\n"  
         
+    end
+    
+    def help_text(help_type)
+    
+        case help_type
+        
+            when "usage"
+            
+                print "\n\n"
+                print "===[ Help Menu ]========== \n\n"
+                print "l = Fetch mailbox \n"
+                print "h = Help\n"
+                print "x = Exit\n"
+                print "--------------------------\n\n"
+            
+            when "invalid"
+                
+                print "\n"
+                print "Invalid command... Type \"h\" or \"?\" for help...\n\n" 
+            
+        end
+    
     end
     
     def clean_up()
@@ -82,23 +108,21 @@ if (__FILE__ == $0)
      
       if @menu_prompt == "h" || @menu_prompt == "?"
       
-        print "Help Text \n"
-        print "---------------------\n\n"
-        print "l = Fetch mailbox again\n"
-        print "h = Help\n"
-        print "x = Exit\n"
-        print "---------------------\n\n"
-      
+            chkmail.help_text("usage")
+            
       elsif @menu_prompt == "l"
-        
-        chkmail.list_inbox
       
-      elsif @menu_prompt == "x" 
+        chkmail.list_inbox
+        
+      elsif @menu_prompt == "x"
+      
             exit
       else
-            print "\n\nInvalid command... Type \"h\" for help...\n\n"  
+      
+            chkmail.help_text("invalid")
+            
       end
-     
+      
     end
 
 # Must have exited...  Logout and Cleanup connection...

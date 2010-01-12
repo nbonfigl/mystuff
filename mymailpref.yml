@@ -1,3 +1,4 @@
+#IMAP Mail Settings
 :port: 993
 :ssl: true
 :server: imap.gmail.com
